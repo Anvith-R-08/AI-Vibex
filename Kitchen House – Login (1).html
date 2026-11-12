@@ -1,0 +1,127 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Log in – Kitchen House</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=DM+Sans:wght@400;500;700&display=swap"><style>
+:root{--or:#F26A1B;--or2:#D4540B;--ink:#2B1B10;--mut:#7A6858;--cream:#FFF4E2;--card:#fff;--line:#F0DFC6;--bad:#D23B3B;--r:18px}
+@media(prefers-color-scheme:dark){:root{--ink:#FBEBD3;--mut:#C3AE97;--cream:#1E140D;--card:#2A1D14;--line:#43301F;color-scheme:dark}}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.5 'DM Sans',system-ui,sans-serif}
+h1,h2,h3,.logo{font-family:'Bricolage Grotesque','DM Sans',sans-serif;line-height:1.1;margin:0}
+button{font:inherit;cursor:pointer}:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+.wrap{max-width:1100px;margin:auto;padding:0 18px}.sp{flex:1}.muted{color:var(--mut)}
+nav{position:sticky;top:0;z-index:5;background:var(--cream);border-bottom:1px solid var(--line)}nav .wrap{display:flex;align-items:center;gap:10px;height:62px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:22px;color:var(--ink);text-decoration:none}
+.logo i{font-style:normal;background:var(--or);width:34px;height:34px;border-radius:11px 11px 11px 3px;display:grid;place-items:center;font-size:18px}
+.btn{border:0;border-radius:999px;padding:10px 20px;font-weight:700;background:var(--or);color:#fff;text-decoration:none;display:inline-block;text-align:center}
+.btn:hover{background:var(--or2)}.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}.btn.sm{padding:6px 13px;font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.dish{padding:0;overflow:hidden;display:flex;flex-direction:column}.dish .art{height:120px;display:grid;place-items:center;font-size:62px}
+.dish .in{padding:14px;display:flex;flex-direction:column;gap:6px;flex:1}.dish .row{display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+.dish.off{opacity:.5}.price{font-weight:800;color:var(--or2);font-size:18px}.pill{padding:3px 11px;border-radius:999px;font-size:12px;font-weight:700;background:#FFE3C7;color:var(--or2)}
+label{display:block;font-weight:700;font-size:14px;margin:12px 0 4px}
+input,select{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit}
+input:focus,select:focus{border-color:var(--or);outline:0}.err{color:var(--bad);font-size:13px;margin-top:3px}
+.auth{max-width:440px;margin:36px auto}.auth h2{font-size:32px;margin-bottom:6px}
+.hint{border:1px dashed var(--line);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--mut);margin-top:14px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:14px 0}.tab{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 16px;font-weight:700;white-space:nowrap}
+.tab.on{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+.page{display:grid;grid-template-columns:1fr 330px;gap:18px;align-items:start;padding-bottom:40px}.cart{position:sticky;top:78px}
+.oh{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.qty{display:inline-flex;align-items:center;gap:8px}.qty button{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-weight:800}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:12px 20px;border-radius:999px;z-index:9;font-weight:700}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:800px){.page{grid-template-columns:1fr}.cart{position:static}}
+</style></head><body><div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<script>
+// Shared data layer: same storage key/shape as the main Kitchen House app.
+const KEY='kh_v1';
+const M=(id,name,price,cat,e,bg)=>({id,name,price,cat,e,bg,on:true});
+const SEED={session:null,tok:103,
+users:[{id:1,name:'Campus Admin',email:'admin@kitchenhouse.edu',pw:'admin123',role:'admin'},
+{id:2,name:'Ravi (Chef)',email:'kitchen@kitchenhouse.edu',pw:'kitchen123',role:'kitchen'},
+{id:3,name:'Ananya Rao',email:'student@college.edu',pw:'student123',role:'student',roll:'CS21045',phone:'9876543210'}],
+menu:[M(1,'Masala Dosa',60,'Breakfast','🥞','#FFE9C2'),M(2,'Veg Biryani',90,'Meals','🍛','#FFD9AE'),M(3,'Paneer Wrap',70,'Snacks','🌯','#FFE3C7'),M(4,'Crispy Samosa',20,'Snacks','🥟','#FFEFC9'),M(5,'Chicken Burger',85,'Snacks','🍔','#FFD6B5'),M(6,'Cold Coffee',45,'Drinks','🧋','#F6E2CF'),M(7,'Masala Chai',15,'Drinks','☕','#F9E4C8'),M(8,'Veg Thali',110,'Meals','🍱','#FFDDB8'),M(9,'Fresh Lime',25,'Drinks','🍋','#FFF3B8'),M(10,'Choco Brownie',50,'Desserts','🍫','#EBD3C0')],
+slots:['12:00','12:15','12:30','12:45','13:00','13:15'].map((t,i)=>({id:i+1,time:t,cap:4})),
+orders:[{id:101,uid:3,items:[{n:'Veg Biryani',q:1,p:90},{n:'Masala Chai',q:1,p:15}],total:105,slot:1,token:'KH-101',status:'Preparing',at:'11:42'},
+{id:102,uid:3,items:[{n:'Paneer Wrap',q:2,p:70}],total:140,slot:2,token:'KH-102',status:'Placed',at:'11:50'}]};
+const loadDB=()=>{try{return JSON.parse(localStorage.getItem(KEY))||SEED}catch(e){return SEED}};
+const saveDB=d=>{try{localStorage.setItem(KEY,JSON.stringify(d))}catch(e){}};
+const emailOk=v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+// Where each role lands after login (files sit in the same folder)
+const HOME={student:'menu.html',kitchen:'kitchen-house.html#kitchen',admin:'kitchen-house.html#admin'};
+const PAGE='login';</script>
+<script type="text/babel">
+const {useState,useEffect}=React;
+const APP_URL='https://claude.ai/artifact/P6HepvPYM2SNzHa6HNPpsV';
+const MENU_URL='https://claude.ai/artifact/R8oASW923U5GCuJdC4daaq',LOGIN_URL='__LOGIN__';
+const free=(db,s)=>s.cap-db.orders.filter(o=>o.slot===s.id).length;
+const jump=u=>{try{window.top.location.href=u}catch(e){location.href=u}};
+function Field({label,err,...p}){return <div><label>{label}</label><input {...p}/>{err&&<div className="err">{err}</div>}</div>}
+function Nav({right}){return <nav><div className="wrap"><span className="logo"><i>🍽️</i>Kitchen House</span><span className="sp"/>{right}</div></nav>}
+function Auth({onDone,db}){
+ const [reg,setReg]=useState(false),[f,setF]=useState({name:'',roll:'',email:'',phone:'',pw:'',pw2:''}),[e,setE]=useState({});
+ const on=k=>ev=>setF({...f,[k]:ev.target.value});
+ function submit(ev){ev.preventDefault();const x={};
+  if(!emailOk(f.email))x.email='Enter a valid email address.';
+  if(f.pw.length<6)x.pw='Password needs at least 6 characters.';
+  if(reg){if(f.name.trim().length<2)x.name='Enter your full name.';
+   if(!/^[A-Za-z0-9]{5,12}$/.test(f.roll))x.roll='Roll number should be 5–12 letters or digits.';
+   if(!/^\d{10}$/.test(f.phone))x.phone='Phone must be 10 digits.';
+   if(f.pw!==f.pw2)x.pw2='Passwords do not match.';
+   if(db.users.some(u=>u.email===f.email.toLowerCase()))x.email='This email is already registered.'}
+  setE(x);if(Object.keys(x).length)return;
+  let u;
+  if(reg){u={id:Date.now(),name:f.name.trim(),roll:f.roll,email:f.email.toLowerCase(),phone:f.phone,pw:f.pw,role:'student'};db.users.push(u)}
+  else{u=db.users.find(u=>u.email===f.email.toLowerCase()&&u.pw===f.pw);if(!u){setE({pw:'Email or password is incorrect.'});return}}
+  onDone(u)}
+ return <div className="wrap"><form className="card auth" onSubmit={submit} noValidate>
+  <h2>{reg?'Student registration':'Log in'}</h2>
+  <p className="muted" style={{margin:0}}>{reg?'Only students can sign up. Staff accounts are created by the admin.':'Students, kitchen staff and admins all log in here.'}</p>
+  {reg&&<><Field label="Full name" value={f.name} onChange={on('name')} err={e.name}/><div className="two"><Field label="Roll number" value={f.roll} onChange={on('roll')} err={e.roll}/><Field label="Phone" value={f.phone} onChange={on('phone')} err={e.phone} inputMode="numeric"/></div></>}
+  <Field label="Email" type="email" value={f.email} onChange={on('email')} err={e.email}/>
+  <Field label="Password" type="password" value={f.pw} onChange={on('pw')} err={e.pw}/>
+  {reg&&<Field label="Confirm password" type="password" value={f.pw2} onChange={on('pw2')} err={e.pw2}/>}
+  <button className="btn" style={{width:'100%',marginTop:18}}>{reg?'Create account':'Log in'}</button>
+  <p style={{textAlign:'center',marginBottom:0}}>{reg?'Have an account? ':'New student? '}<a href="#" style={{color:'var(--or2)',fontWeight:700}} onClick={ev=>{ev.preventDefault();setE({});setReg(!reg)}}>{reg?'Log in':'Register'}</a></p>
+  {!reg&&<div className="hint"><b>Demo logins</b><br/>Student: student@college.edu / student123<br/>Kitchen: kitchen@kitchenhouse.edu / kitchen123<br/>Admin: admin@kitchenhouse.edu / admin123</div>}
+ </form></div>}
+function LoginPage(){
+ const db=loadDB(),[done,setDone]=useState(null);
+ const finish=u=>{saveDB({...db,session:u.id});const url=u.role==='student'?MENU_URL:APP_URL+'#'+u.role;setDone({u,url});jump(url)};
+ if(done)return <><Nav/><div className="wrap"><div className="card auth"><h2>Welcome, {done.u.name.split(' ')[0]}!</h2><p className="muted">You are logged in as {done.u.role}.</p><a className="btn" style={{width:'100%'}} href={done.url} target="_top">{done.u.role==='student'?'Open the menu':'Open your dashboard'}</a></div></div></>;
+ return <><Nav/><Auth db={db} onDone={finish}/></>}
+function MenuPage(){
+ const [db,setDb]=useState(loadDB),[q,setQ]=useState(''),[cat,setCat]=useState('All'),[slot,setSlot]=useState('auto'),[toast,setToast]=useState(''),[cart,setCart]=useState({});
+ const user=db.users.find(u=>u.id===db.session);
+ if(!user||user.role!=='student')return <><Nav right={<a className="btn ghost sm" href={LOGIN_URL} target="_top">Login page</a>}/><Auth db={db} onDone={u=>{if(u.role!=='student'){jump(APP_URL+'#'+u.role);return}saveDB({...db,session:u.id});setDb(loadDB())}}/></>;
+ const say=m=>{setToast(m);clearTimeout(window.__t);window.__t=setTimeout(()=>setToast(''),2800)};
+ const cats=['All',...new Set(db.menu.map(m=>m.cat))];
+ const list=db.menu.filter(m=>(cat==='All'||m.cat===cat)&&m.name.toLowerCase().includes(q.toLowerCase()));
+ const lines=db.menu.filter(m=>cart[m.id]).map(m=>({...m,q:cart[m.id]})),total=lines.reduce((s,l)=>s+l.q*l.price,0);
+ const add=(id,d)=>setCart(c=>{const n=(c[id]||0)+d,x={...c};n<=0?delete x[id]:x[id]=n;return x});
+ const mine=db.orders.filter(o=>o.uid===user.id).sort((a,b)=>b.id-a.id);
+ function place(){
+  const open=db.slots.filter(s=>free(db,s)>0);if(!open.length){say('All pickup slots are full for today.');return}
+  const s=slot==='auto'?open[0]:db.slots.find(s=>s.id===+slot);if(!s||free(db,s)<=0){say('That slot just filled up. Pick another.');return}
+  const n=db.tok+1,o={id:n,uid:user.id,items:lines.map(l=>({n:l.name,q:l.q,p:l.price})),total,slot:s.id,token:'KH-'+n,status:'Placed',at:new Date().toTimeString().slice(0,5)};
+  const nd={...db,tok:n,orders:[...db.orders,o]};saveDB(nd);setDb(nd);setCart({});setSlot('auto');say('Order placed! Token '+o.token+' · pickup '+s.time)}
+ const out=()=>{saveDB({...db,session:null});setDb(loadDB())};
+ return <><Nav right={<><span className="muted">{user.name}</span><button className="btn sm" onClick={out}>Log out</button></>}/>
+ <div className="wrap"><div style={{padding:'22px 0 0'}}><h2 style={{fontSize:30}}>Menu</h2><span className="muted">Pick your food and a pickup slot. Order Smart. Skip the Queue!</span></div>
+ <div className="page"><div><input style={{marginTop:14}} placeholder="Search dishes…" aria-label="Search dishes" value={q} onChange={e=>setQ(e.target.value)}/>
+  <div className="tabs">{cats.map(c=><button key={c} className={'tab'+(cat===c?' on':'')} onClick={()=>setCat(c)}>{c}</button>)}</div>
+  {list.length?<div className="grid">{list.map(m=><div key={m.id} className={'card dish'+(m.on?'':' off')}><div className="art" style={{background:m.bg}}>{m.e}</div>
+   <div className="in"><b>{m.name}</b><span className="muted" style={{fontSize:13}}>{m.cat}</span><div className="row"><span className="price">₹{m.price}</span>
+   {m.on?<button className="btn sm" onClick={()=>{add(m.id,1);say(m.name+' added')}}>Add</button>:<span className="pill">Sold out</span>}</div></div></div>)}</div>
+  :<p className="muted">No dishes match “{q}”. Try another word or category.</p>}
+  {mine.length>0&&<><h3 style={{margin:'28px 0 10px'}}>Your recent orders</h3>{mine.slice(0,3).map(o=><div className="card oh" key={o.id} style={{marginBottom:10}}><b>{o.token}</b><span>{o.items.map(i=>i.q+'× '+i.n).join(', ')}</span><span className="pill">{o.status}</span></div>)}</>}</div>
+ <aside className="card cart"><h3>Your cart</h3>
+  {lines.length?<>{lines.map(l=><div className="oh" key={l.id} style={{margin:'10px 0'}}><span>{l.e} {l.name}</span><span className="qty"><button aria-label="Less" onClick={()=>add(l.id,-1)}>−</button>{l.q}<button aria-label="More" onClick={()=>add(l.id,1)}>+</button></span></div>)}
+   <label htmlFor="sl">Pickup slot</label><select id="sl" value={slot} onChange={e=>setSlot(e.target.value)}><option value="auto">Auto-assign best slot</option>{db.slots.map(s=><option key={s.id} value={s.id} disabled={free(db,s)<=0}>{s.time} · {free(db,s)>0?free(db,s)+' left':'Full'}</option>)}</select>
+   <div className="oh" style={{margin:'16px 0'}}><span>Total</span><span className="price" style={{fontSize:26}}>₹{total}</span></div>
+   <button className="btn" style={{width:'100%'}} onClick={place}>Place order</button></>
+  :<p className="muted">Your cart is empty. Add something tasty.</p>}</aside></div></div>
+ {toast&&<div className="toast" role="status">{toast}</div>}</>}
+ReactDOM.createRoot(document.getElementById('root')).render(PAGE==='login'?<LoginPage/>:<MenuPage/>);
+</script></body></html>
